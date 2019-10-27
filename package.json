@@ -1,6 +1,6 @@
 {
   "name": "react-safe-context",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Create React context objects that have built-in safety against having undefined value",
   "author": "Darren Lane",
   "license": "MIT",
@@ -29,7 +29,7 @@
     "build:docs": "yarn build:clean && typedoc",
     "build:flow": "yarn build:clean && node -r esm scripts/convertFlow",
     "build:full": "yarn build:flow && typedoc",
-    "prepare": "yarn test && yarn build:full"
+    "prepare": "yarn test && yarn build:flow"
   },
   "dependencies": {
     "react": "^16.10.2",
