@@ -1,0 +1,12 @@
+{
+  "exclude": "**//node_modules//**",
+  "excludeExternal": true,
+  "excludePrivate": true,
+  "includeDeclarations": true,
+  "ignoreCompileErrors": true,
+  "mode": "file",
+  "out": "docs",
+  "readme": "README.md",
+  "module": "commonjs",
+  "target": "es5"
+}

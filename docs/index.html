@@ -1,0 +1,290 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>react-safe-context</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">react-safe-context</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> react-safe-context</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#react-safe-context" id="react-safe-context" style="color: inherit; text-decoration: none;">
+					<h1>react-safe-context</h1>
+				</a>
+				<p>Create type-safe React context object with built-in undefined value handling, perfect for strict type-safe projects.</p>
+				<a href="#overview" id="overview" style="color: inherit; text-decoration: none;">
+					<h2>Overview</h2>
+				</a>
+				<ul>
+					<li>What is this?</li>
+					<li>How to install?</li>
+					<li>How to use?</li>
+					<li>How does it work?</li>
+				</ul>
+				<a href="#what-is-this" id="what-is-this" style="color: inherit; text-decoration: none;">
+					<h2>What is this?</h2>
+				</a>
+				<p>This package provides a wrapper around <code>React.createContext()</code> that allows creating a context who&#39;s value cannot be undefined, even without providing an initial value.</p>
+				<p>Normally, when using vanila React code to create a React context, the type of the context is inferred by the initial value passed to it</p>
+				<pre><code class="language-typescript"><span class="hljs-comment">// context1 will have type React.Context&lt;string&gt;</span>
+<span class="hljs-keyword">const</span> context1 = React.createContext(<span class="hljs-string">'value'</span>);
+
+<span class="hljs-comment">// context2 will have type React.Context&lt;undefined&gt;</span>
+<span class="hljs-keyword">const</span> context2 = React.createContext(<span class="hljs-literal">undefined</span>);
+
+<span class="hljs-comment">// Typescript error in strict mode because string doesn't match undefined</span>
+<span class="hljs-keyword">const</span> context3 = React.createContext&lt;<span class="hljs-built_in">string</span>&gt;(<span class="hljs-literal">undefined</span>);
+
+<span class="hljs-comment">// context4 will have type React.Context&lt;string | undefined&gt;</span>
+<span class="hljs-keyword">const</span> context4 = React.createContext&lt;<span class="hljs-built_in">string</span> | <span class="hljs-literal">undefined</span>&gt;(<span class="hljs-literal">undefined</span>);</code></pre>
+				<p>As you can see, this poses an issue if you want to create a context that starts without a value, but can only accept future values of a known type, such as <code>string</code>. You have to explicitly pass the generic type with <code>| undefined</code> in order to get it to all work out. But, when using strict typechecking, this poses a different problem:</p>
+				<pre><code class="language-typescript">import * as React from 'react';
+
+const context = React.createContext&lt;string | undefined&gt;(undefined);
+
+class ClassComponent extends React.Component {
+  public render() {
+    return (
+      &lt;context.Consumer&gt;
+      {/* Error because toUpperCase() cannot be called on value since it may be undefined */}
+      {value =&gt; &lt;&gt;{value.toUpperCase()}&lt;/&gt;}
+      &lt;/context.Consumer&gt;
+    );
+  }
+}
+
+const FunctionComponent = () =&gt; {
+  // Error because toUpperCase() cannot be called on value since it may be undefined
+  return &lt;&gt;{React.useContext(context).toUpperCase()}&lt;/&gt;
+};
+
+const component = (
+  &lt;context.Provider value="initial"&gt;
+    &lt;ClassComponent/&gt;
+    &lt;FunctionComponent/&gt;
+  &lt;/context.Provider&gt;
+);</code></pre>
+				<p>Since <code>context</code> is of type <code>React.Context&lt;string | undefined&gt;</code>, the value retrieved from it may be <code>undefined</code>, so you must first handle that case before treating it as a string. This becomes tedious as each context and use of a context that starts of uninitialized will have to do the same undefined-checking behavior.</p>
+				<p>This package aleviates that issue by allowing usage of uninitialized context objects without having to check for undefined values when consuming them. That&#39;s because it internally handles all the undefined checking.</p>
+				<a href="#how-to-install" id="how-to-install" style="color: inherit; text-decoration: none;">
+					<h2>How to install?</h2>
+				</a>
+				<p>Installation is just like any other npm package</p>
+				<pre><code>yarn <span class="hljs-keyword">add</span><span class="bash"> react-safe-context</span></code></pre><p>or</p>
+				<pre><code>npm <span class="hljs-keyword">install</span> react-<span class="hljs-keyword">safe</span>-<span class="hljs-keyword">context</span></code></pre>
+				<a href="#how-to-use" id="how-to-use" style="color: inherit; text-decoration: none;">
+					<h2>How to use?</h2>
+				</a>
+				<p>Usage is pretty simmilar to a standard React context. Here&#39;s the same example from above, but re-written with both use cases for react-safe-context:</p>
+				<pre><code class="language-typescript">import * as React from 'react';
+import {createSafeContext} from 'react-safe-context';
+
+// if parameter is not passed, pass the desired value type in the Generic
+const context1 = createSafeContext&lt;string&gt;('Context1');
+// if parameter is passed, no need to provide the type explicitly
+const context2 = createSafeContext('Context2', "initialValue");
+
+class ClassComponent extends React.Component {
+  public render() {
+    return (
+      &lt;&gt;
+        &lt;context1.Consumer&gt;
+          {value =&gt; &lt;&gt;{value.toUpperCase()}&lt;/&gt;}
+        &lt;/context1.Consumer&gt;
+        &lt;context2.Consumer&gt;
+          {value =&gt; &lt;&gt;{value.toUpperCase()}&lt;/&gt;}
+        &lt;/context2.Consumer&gt;
+      &lt;/&gt;
+    );
+  }
+}
+
+const FunctionComponent = () =&gt; (
+  &lt;&gt;
+    {context1.useValue().toUpperCase()}
+    {context2.useValue().toUpperCase()}
+  &lt;/&gt;
+);
+
+const component = (
+  &lt;context.Provider value="delayedValue"&gt;
+    &lt;ClassComponent/&gt;
+    &lt;FunctionComponent/&gt;
+  &lt;/context.Provider&gt;
+);</code></pre>
+				<p>The key differences are:</p>
+				<ul>
+					<li><code>createSafeContext()</code> instead of <code>React.createContext()</code><ul>
+							<li>The first parameter to createSafeContext is a name for the context. This is used in the error that gets thrown if the value is not initialized.</li>
+							<li>Can leave off the second parameter instead of passing <code>undefined</code> in order to avoid setting an initial value<ul>
+									<li>If so, generic type of the context must be provided</li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+					<li><code>context.useValue()</code> instead of <code>React.useContext(context)</code><ul>
+							<li>Since the created object isn&#39;t a true React context object, it can&#39;t be used with <code>React.useContext</code></li>
+						</ul>
+					</li>
+				</ul>
+				<a href="#what-about-exceptions" id="what-about-exceptions" style="color: inherit; text-decoration: none;">
+					<h2>What about exceptions?</h2>
+				</a>
+				<p>If no initial value is set and no provider is created to set a vlaue, then it&#39;s still necessary to throw an error, otherwise consumers of the context could cause runtime exceptions. If the Conumser or custom hook is used without value being set, an error will be thrown:</p>
+				<pre><code><span class="hljs-keyword">value</span> <span class="hljs-keyword">for</span> ${<span class="hljs-type">name</span>} was <span class="hljs-keyword">not</span> initialized. Make sure the Provider <span class="hljs-keyword">is</span> <span class="hljs-keyword">set</span> up.</code></pre><p>where <code>name</code> is the first parameter passed when the safe context was created. This can be handled with a React ErrorBoundary component, as is typical with errors in React&#39;s VirtualDOM.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="globals.html#safecontext" class="tsd-kind-icon">Safe<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter">
+						<a href="globals.html#createsafecontext" class="tsd-kind-icon">create<wbr>Safe<wbr>Context</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+						<a href="globals.html#safeconsumer" class="tsd-kind-icon">safe<wbr>Consumer</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+						<a href="globals.html#safeprovider" class="tsd-kind-icon">safe<wbr>Provider</a>
+					</li>
+					<li class=" tsd-kind-function tsd-has-type-parameter tsd-is-not-exported">
+						<a href="globals.html#validatevalue" class="tsd-kind-icon">validate<wbr>Value</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

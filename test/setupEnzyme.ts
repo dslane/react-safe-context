@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-undef */
 import { configure } from 'enzyme';
 import EnzymeAdapter from 'enzyme-adapter-react-16';
 import { JSDOM } from 'jsdom';
@@ -21,10 +20,10 @@ function copyProps(src: unknown, target: unknown) {
 (global as any).navigator = {
   userAgent: 'node.js',
 };
-(global as any).requestAnimationFrame = function(callback: (...args: any[]) => void) {
+(global as any).requestAnimationFrame = function(callback: Parameters<typeof setTimeout>[0]) {
   return setTimeout(callback, 0);
 };
-(global as any).cancelAnimationFrame = function(id: NodeJS.Timeout) {
+(global as any).cancelAnimationFrame = function(id: Parameters<typeof clearTimeout>[0]) {
   clearTimeout(id);
 };
 copyProps(window, global as any);

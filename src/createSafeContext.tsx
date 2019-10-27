@@ -1,8 +1,14 @@
 import * as React from 'react';
 
+/**
+ * Wrapper for React Context that does not allow undefined values
+ */
 export type SafeContext<T> = {
+  /** Consumer component for the context */
   Consumer: React.FC<React.ConsumerProps<T>>;
+  /** Provider component for the context */
   Provider: React.FC<React.ProviderProps<T>>;
+  /** Custom hook to get the context's value */
   useValue: () => T;
 };
 
@@ -13,31 +19,29 @@ const validateValue = <T,>(name: string, value: T | undefined): T => {
   return value;
 };
 
-const safeConsumer = <T,>(
-  name: string,
-  Consumer: React.Context<T | undefined>['Consumer'],
-): SafeContext<T>['Consumer'] => {
-  const safeConsumer = (props: React.ConsumerProps<T>): React.ReactElement | null => (
-    <Consumer>{value => props.children(validateValue(name, value))}</Consumer>
-  );
-  safeConsumer.$$typeof = Symbol('react.context');
-  return safeConsumer;
-};
+const safeConsumer = <T,>(name: string, context: React.Context<T | undefined>) => (props: React.ConsumerProps<T>) => (
+  <context.Consumer>{value => props.children(validateValue(name, value))}</context.Consumer>
+);
 
-const safeProvider = <T,>(Provider: React.Context<T | undefined>['Provider']): SafeContext<T>['Provider'] => {
-  const safeProvider = (props: React.ProviderProps<T>): React.ReactElement | null => (
-    <Provider value={props.value}>{props.children}</Provider>
-  );
-  safeProvider.$$typeof = Symbol('react.context');
-  return safeProvider;
-};
+const safeProvider = <T,>(context: React.Context<T | undefined>) => (props: React.ProviderProps<T>) => (
+  <context.Provider value={props.value}>{props.children}</context.Provider>
+);
 
-export default <T,>(name: string, initialValue?: T): SafeContext<T> => {
+/**
+ * Creates an object that wraps a React Context and provides non-undefined values via the consumer and a custom hook. Also
+ * prevents providing undefined as a value to the provider
+ *
+ * @export
+ * @typeparam T The type of value the context should hold
+ * @param {string} name The name of the context, used when no value is provided
+ * @param {T} initialValue Optional initial value to store in the context
+ * @returns {SafeContext<T>} The context wrapper, containing Consumer and Provider components, as well as a custom hook
+ */
+export const createSafeContext = <T,>(name: string, initialValue?: T): SafeContext<T> => {
   const context = React.createContext(initialValue);
   return {
-    ...context,
-    Consumer: safeConsumer(name, context.Consumer),
-    Provider: safeProvider(context.Provider),
+    Consumer: safeConsumer(name, context),
+    Provider: safeProvider(context),
     useValue: () => validateValue(name, React.useContext(context)),
   };
 };

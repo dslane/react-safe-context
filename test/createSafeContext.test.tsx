@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import createSafeContext from '../src/createSafeContext';
+import { createSafeContext } from '../src/createSafeContext';
 
 describe('createSafeContext', () => {
   const contextName = 'TestContext';
@@ -36,7 +36,7 @@ describe('createSafeContext', () => {
 
     describe('and there is an initial value', () => {
       const initialValue = 'val';
-      const getInitializedContext = () => createSafeContext(contextName, initialValue);
+      const getInitializedContext = () => getContext(initialValue);
 
       it('passes the provided value when using the Consumer', () => {
         const { Consumer } = getInitializedContext();

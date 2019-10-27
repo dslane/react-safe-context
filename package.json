@@ -2,16 +2,24 @@
   "name": "react-safe-context",
   "version": "1.0.0",
   "description": "Create React context objects that have built-in safety against having undefined value",
-  "main": "index.js",
   "author": "Darren Lane",
   "license": "MIT",
   "private": false,
-  "jest": {
-    "testEnvironment": "node"
-  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "lint:fix": "eslint './src/**/*.{ts,tsx}'",
-    "test": "jest"
+    "test": "jest --config .jestrc.js",
+    "test:watch": "yarn test --watch",
+    "build": "tsc",
+    "build:clean": "tsc --build --clean && tsc",
+    "build:docs": "yarn build:clean && typedoc",
+    "build:flow": "yarn build:clean && node -r esm scripts/convertFlow",
+    "build:full": "yarn build:flow && typedoc",
+    "prepare": "yarn test && yarn build:full"
   },
   "dependencies": {
     "react": "^16.10.2",
@@ -25,6 +33,7 @@
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.19",
     "@types/jsdom": "^12.2.4",
+    "@types/node": "^12.11.7",
     "@types/react": "^16.9.9",
     "@typescript-eslint/eslint-plugin": "^2.4.0",
     "@typescript-eslint/parser": "^2.4.0",
@@ -37,10 +46,14 @@
     "eslint-config-react": "^1.1.7",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-react": "^7.16.0",
+    "esm": "^3.2.25",
+    "flowgen": "^1.10.0",
     "jest": "^24.9.0",
     "jest-cli": "^24.9.0",
+    "np": "^5.1.1",
     "prettier": "^1.18.2",
     "react-dom": "^16.10.2",
-    "ts-jest": "^24.1.0"
+    "ts-jest": "^24.1.0",
+    "typedoc": "^0.15.0"
   }
 }
