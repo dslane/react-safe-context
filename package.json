@@ -5,6 +5,14 @@
   "author": "Darren Lane",
   "license": "MIT",
   "private": false,
+  "sideEffects": false,
+  "keywords": [
+    "react",
+    "safe",
+    "context",
+    "typescript",
+    "flow"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
