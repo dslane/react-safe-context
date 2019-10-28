@@ -5,9 +5,9 @@ import * as React from 'react';
  */
 export type SafeContext<T> = {
   /** Consumer component for the context */
-  Consumer: React.FC<React.ConsumerProps<T>>;
+  Consumer: React.ComponentType<React.ConsumerProps<T>>;
   /** Provider component for the context */
-  Provider: React.FC<React.ProviderProps<T>>;
+  Provider: React.ComponentType<React.ProviderProps<T>>;
   /** Custom hook to get the context's value */
   useValue: () => T;
 };

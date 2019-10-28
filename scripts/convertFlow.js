@@ -16,7 +16,7 @@ fs.readdir(distFolder, async (err, files) => {
       writePromises.push(
         fs.writeFile(
           path.join(distFolder, `${matches[1]}.js.flow`),
-          beautify(compiler.compileDefinitionFile(path.join(distFolder, file))),
+          `// @flow\n\n${beautify(compiler.compileDefinitionFile(path.join(distFolder, file)))}`,
           () => {},
         ),
       );
