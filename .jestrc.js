@@ -114,7 +114,7 @@ module.exports = {
 
   // A list of paths to directories that Jest should use to search for files in
   roots: [
-    "<rootDir>/test"
+    "<rootDir>/src"
   ],
 
   // Allows you to use a custom runner instead of Jest's default test runner
@@ -186,6 +186,6 @@ module.exports = {
   // Whether to use watchman for file crawling
   // watchman: true,
 
-  
-  "setupFilesAfterEnv": ["<rootDir>/test/setupEnzyme.ts"],
+
+  "setupFilesAfterEnv": ["<rootDir>/setupEnzyme.ts"],
 };

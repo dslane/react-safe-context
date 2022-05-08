@@ -24,8 +24,8 @@
     "lint:fix": "eslint './src/**/*.{ts,tsx}'",
     "test": "jest --config .jestrc.js",
     "test:watch": "yarn test --watch",
-    "build": "tsc",
-    "build:clean": "tsc --build --clean && tsc",
+    "build": "tsc --project tsconfig.build.json",
+    "build:clean": "tsc --build --clean && yarn build",
     "build:docs": "yarn build:clean && typedoc",
     "build:flow": "yarn build:clean && node -r esm scripts/convertFlow",
     "build:full": "yarn build:flow && typedoc",
@@ -66,5 +66,8 @@
     "ts-jest": "^24.1.0",
     "typedoc": "^0.22.15",
     "typescript": "^3.6.4"
+  },
+  "resolutions": {
+    "@types/react": "16.14.26"
   }
 }

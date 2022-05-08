@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { mount } from 'enzyme';
-import { createSafeContext } from '../src/createSafeContext';
+import { createSafeContext } from './createSafeContext';
 
 describe('createSafeContext', () => {
   const contextName = 'TestContext';
@@ -25,7 +25,6 @@ describe('createSafeContext', () => {
         const Wrapper = () => {
           const value = useValue();
           fail('hook should not succeed');
-          return <>{value}</>;
         };
         const renderHook = () => mount(<Wrapper />);
         expect(renderHook).toThrowError(
