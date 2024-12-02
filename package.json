@@ -10,8 +10,7 @@
     "react",
     "safe",
     "context",
-    "typescript",
-    "flow"
+    "typescript"
   ],
   "repository": {
     "type": "git",
