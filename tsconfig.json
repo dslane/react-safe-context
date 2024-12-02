@@ -5,25 +5,14 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "lib": ["es6", "es2015"],
+    "lib": ["es6", "es2015", "dom"],
     "types": ["node", "jest"],
     "declarationDir": "./dist",
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "jsx": "react"
   },
-  "exclude": [
-    "dist",
-    "node_modules",
-    "test",
-    "docs",
-    "scripts",
-    "coverage",
-    "**/*.js"
-  ],
-  "include": [
-    "src/**/*"
-  ]
+  "exclude": ["dist", "node_modules", "test", "docs", "scripts", "coverage", "**/*.js"],
+  "include": ["src/**/*", "./setupTests.ts"]
 }

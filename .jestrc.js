@@ -127,10 +127,10 @@ module.exports = {
   // setupFilesAfterEnv: [],
 
   // A list of paths to snapshot serializer modules Jest should use for snapshot testing
-  snapshotSerializers: ['enzyme-to-json/serializer'],
+  // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -187,5 +187,5 @@ module.exports = {
   // watchman: true,
 
 
-  "setupFilesAfterEnv": ["<rootDir>/setupEnzyme.ts"],
+  "setupFilesAfterEnv": ["<rootDir>/setupTests.ts"],
 };

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { mount } from 'enzyme';
+import { render, renderHook, screen } from '@testing-library/react';
 import { createSafeContext } from './createSafeContext';
 
 describe('createSafeContext', () => {
@@ -14,7 +14,7 @@ describe('createSafeContext', () => {
 
       it('throws an error when using the Consumer', () => {
         const { Consumer } = getContext();
-        const renderConsumer = () => mount(<Consumer>{_ => fail('Consumer should not render children')}</Consumer>);
+        const renderConsumer = () => render(<Consumer>{(_) => fail('Consumer should not render children')}</Consumer>);
         expect(renderConsumer).toThrowError(
           `value for ${contextName} was not initialized. Make sure the Provider is set up.`,
         );
@@ -22,12 +22,7 @@ describe('createSafeContext', () => {
 
       it('throws an error when using the hook', () => {
         const { useValue } = getContext<unknown>();
-        const Wrapper = () => {
-          const value = useValue();
-          fail('hook should not succeed');
-        };
-        const renderHook = () => mount(<Wrapper />);
-        expect(renderHook).toThrowError(
+        expect(() => renderHook(useValue)).toThrowError(
           `value for ${contextName} was not initialized. Make sure the Provider is set up.`,
         );
       });
@@ -39,15 +34,13 @@ describe('createSafeContext', () => {
 
       it('passes the provided value when using the Consumer', () => {
         const { Consumer } = getInitializedContext();
-        const renderConsumer = () => mount(<Consumer>{value => value}</Consumer>);
-        expect(renderConsumer().text()).toEqual(initialValue);
+        render(<Consumer>{(value) => value}</Consumer>);
+        expect(screen.getByText(initialValue)).toBeInTheDocument();
       });
 
       it('passes the provided value when using the hook', () => {
         const { useValue } = getInitializedContext();
-        const Wrapper = () => <>{useValue()}</>;
-        const renderHook = () => mount(<Wrapper />);
-        expect(renderHook().text()).toEqual(initialValue);
+        expect(renderHook(useValue).result.current).toBe(initialValue);
       });
     });
   });
@@ -57,25 +50,21 @@ describe('createSafeContext', () => {
 
     it('passes the provided value when using the Consumer', () => {
       const { Consumer, Provider } = getContext<typeof providedValue>();
-      const renderConsumer = () =>
-        mount(
-          <Provider value={providedValue}>
-            <Consumer>{value => value}</Consumer>
-          </Provider>,
-        );
-      expect(renderConsumer().text()).toEqual(providedValue);
+      render(
+        <Provider value={providedValue}>
+          <Consumer>{(value) => value}</Consumer>
+        </Provider>,
+      );
+      expect(screen.getByText(providedValue)).toBeInTheDocument();
     });
 
     it('passes the provided value when using the hook', () => {
       const { useValue, Provider } = getContext<typeof providedValue>();
-      const Wrapper = () => <>{useValue()}</>;
-      const renderHook = () =>
-        mount(
-          <Provider value={providedValue}>
-            <Wrapper />
-          </Provider>,
-        );
-      expect(renderHook().text()).toEqual(providedValue);
+      expect(
+        renderHook(useValue, {
+          wrapper: ({ children }) => <Provider value={providedValue}>{children}</Provider>,
+        }).result.current,
+      ).toBe(providedValue);
     });
   });
 });

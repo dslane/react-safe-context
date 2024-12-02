@@ -1,12 +1,10 @@
 {
-  "exclude": "**//node_modules//**",
-  "excludeExternal": true,
+  "tsconfig": "tsconfig.json",
+  "out": "./docs",
   "excludePrivate": true,
-  "includeDeclarations": true,
-  "ignoreCompileErrors": true,
-  "mode": "file",
-  "out": "docs",
+  "excludeProtected": true,
+  "excludeExternals": true,
   "readme": "README.md",
-  "module": "commonjs",
-  "target": "es5"
+  "entryPoints": ["./src/index.ts"],
+  "exclude": ["./node_modules"]
 }

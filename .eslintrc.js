@@ -25,8 +25,8 @@ module.exports = {
     },
   },
   plugins: [
-    "react", 
-    "@typescript-eslint", 
+    "react",
+    "@typescript-eslint",
     "prettier"
   ],
   env: {
